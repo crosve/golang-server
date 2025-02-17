@@ -2,13 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
 
-	"github.com/crosve/golang/internal/auth"
 	"github.com/crosve/golang/internal/database"
 )
 
@@ -45,20 +43,7 @@ func (apicfg *apiConfig) handleCreateUser(w http.ResponseWriter, r *http.Request
 
 }
 
-func (apicfg *apiConfig) handleGetUser(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetAPIKey(r.Header)
-
-	if err != nil {
-		respondWithError(w, 401, "Invalid API Key")
-		return
-	}
-
-	user, err := apicfg.DB.GetUserByAPIKey(r.Context(), apiKey)
-
-	if err != nil {
-		respondWithError(w, 404, fmt.Sprintf("User with API Key %s not found", apiKey))
-		return
-	}
+func (apicfg *apiConfig) handleGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
 
 	respondWithJSON(w, 200, databaseUserToUser(user))
 
